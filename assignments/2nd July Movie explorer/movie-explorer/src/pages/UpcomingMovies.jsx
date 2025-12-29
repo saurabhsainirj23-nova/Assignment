@@ -6,14 +6,16 @@ const UpcomingMovies = () => {
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const getMovies = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const res = await fetchUpcomingMovies(pages);
+      const res = await fetchUpcomingMovies(page);
       setMovies((prev) => [...prev, ...res.data.results]);
     } catch (err) {
-      console.error("Error fetching movies:", err);
+      setError("Failed to fetch movies. Please check your API key.");
     }
     setLoading(false);
   };
@@ -23,25 +25,25 @@ const UpcomingMovies = () => {
   }, [page]);
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4 text-white">🎬 Upcoming Movies</h1>
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+    <div>
+      <h1>🎬 Upcoming Movies</h1>
+      {error && <p className="status-message">{error}</p>}
+      {!loading && movies.length === 0 && !error && (
+        <p className="status-message">No movies available right now.</p>
+      )}
+      <div className="movie-grid">
         {movies.map((movie) => (
           <MovieCard key={movie.id} movie={movie} />
         ))}
       </div>
-      <div className="mt-6 flex justify-center">
-        <button
-          onClick={() => setPage((prev) => prev + 1)}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
+      <div className="load-more-container">
+        <button onClick={() => setPage((prev) => prev + 1)} className="load-more-btn">
           Load More
         </button>
       </div>
-      {loading && <p className="text-white text-center mt-4">Loading...</p>}
+      {loading && <p className="status-message">Loading...</p>}
     </div>
   );
-  console.log("Movies:", movies);
 
 };
 

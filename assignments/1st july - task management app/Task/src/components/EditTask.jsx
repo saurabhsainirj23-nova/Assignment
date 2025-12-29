@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getTasks, updateTask } from '../api';
+import { getTask, updateTask } from '../api';
 import { useParams, useNavigate } from 'react-router-dom';
 
 function EditTask() {
@@ -12,9 +12,10 @@ function EditTask() {
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        const res = await getTasks();
-        const task = res.data.find((t) => t.id === Number(id));
-        if (task) {
+        const res = await getTask(Number(id));
+        const task = res.data;
+
+        if (task && task.title !== undefined) {
           setTitle(task.title);
         } else {
           setError('Task not found.');
@@ -25,19 +26,22 @@ function EditTask() {
         setLoading(false);
       }
     };
+
     fetchTask();
   }, [id]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
     if (title.trim() === '') {
       alert('Task title cannot be empty');
       return;
     }
+
     try {
-      await updateTask(id, { title: title.trim() });
+      await updateTask(Number(id), { title: title.trim() });
       navigate('/');
-    } catch (err) {
+    } catch {
       alert('Failed to update task.');
     }
   };

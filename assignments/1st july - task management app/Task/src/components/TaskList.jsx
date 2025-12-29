@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { getTasks, deleteTask } from '../api';
 import { Link } from 'react-router-dom';
 
@@ -6,11 +6,11 @@ function TaskList() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     const res = await getTasks();
     setTasks(res.data);
     setLoading(false);
-  };
+  }, []);
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this task?');
@@ -21,7 +21,7 @@ function TaskList() {
 
   useEffect(() => {
     loadTasks();
-  }, []);
+  }, [loadTasks]);
 
   return (
     <div>

@@ -1,0 +1,85 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.scoreboard p {
+  margin: 5px;
+  font-size: 1.1rem;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(7, 60px);
+  grid-gap: 5px;
+  justify-content: center;
+  margin: 20px auto;
+  background-color: #0077b6;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.cell {
+  width: 60px;
+  height: 60px;
+  background-color: #caf0f8;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.red {
+  background-color: red;
+}
+
+.yellow {
+  background-color: yellow;
+}
+
+.win {
+  outline: 4px solid gold;
+}
+
+#message {
+  font-size: 1.2rem;
+  margin: 10px;
+  font-weight: bold;
+}
+
+.buttons button {
+  margin: 5px;
+  padding: 8px 16px;
+  background-color: #00b4d8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.buttons button:hover {
+  background-color: #0096c7;
+}
+@keyframes drop {
+  0% {
+    transform: translateY(-300px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.cell.red,
+.cell.yellow {
+  animation: drop 0.3s ease-out;
+}
+
