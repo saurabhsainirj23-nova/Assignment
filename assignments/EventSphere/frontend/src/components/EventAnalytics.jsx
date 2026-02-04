@@ -1,224 +1,220 @@
-import React, { useState, useEffect } from 'react';
-import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
-import { FaChartBar, FaChartLine, FaChartPie, FaFilter } from 'react-icons/fa';
+import { useMemo, useState } from "react";
+import { Bar, Line, Doughnut } from "react-chartjs-2";
+import {
+  FaChartBar,
+  FaChartLine,
+  FaChartPie,
+} from "react-icons/fa";
+import "./Analytics.css";
 
-const EventAnalytics = ({ events, registrations }) => {
-  const [timeRange, setTimeRange] = useState('month'); // 'week', 'month', 'year'
-  const [chartType, setChartType] = useState('revenue'); // 'revenue', 'attendance', 'categories', 'growth'
-  
-  // Process data based on selected time range and chart type
-  const processData = () => {
-    // Sample data for demonstration
-    const revenueData = {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      datasets: [
-        {
-          label: 'Revenue',
-          data: [4500, 5200, 6800, 5900, 6000, 7200, 8500, 9200, 8700, 9500, 10200, 11500],
-          backgroundColor: 'rgba(76, 175, 80, 0.6)',
-          borderColor: '#4caf50',
-          borderWidth: 2,
-        },
-      ],
+/* =========================
+   CONSTANTS
+========================= */
+const MONTHS = [
+  "Jan","Feb","Mar","Apr","May","Jun",
+  "Jul","Aug","Sep","Oct","Nov","Dec",
+];
+
+/* =========================
+   COMPONENT
+========================= */
+const EventAnalytics = ({ events = [], registrations = [] }) => {
+  const [chartType, setChartType] = useState("revenue");
+  const [timeRange, setTimeRange] = useState("month");
+
+  /* =========================
+     DATA PROCESSING (MOCK)
+     → Replace with real logic later
+  ========================= */
+  const chartData = useMemo(() => {
+    const baseOptions = {
+      labels: MONTHS,
     };
 
-    const attendanceData = {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      datasets: [
-        {
-          label: 'Attendance',
-          data: [120, 150, 180, 210, 190, 240, 280, 320, 290, 350, 380, 420],
-          backgroundColor: 'rgba(33, 150, 243, 0.6)',
-          borderColor: '#2196f3',
-          borderWidth: 2,
-        },
-      ],
-    };
-
-    const categoriesData = {
-      labels: ['Music', 'Technology', 'Business', 'Sports', 'Arts', 'Food', 'Education'],
-      datasets: [
-        {
-          label: 'Event Categories',
-          data: [35, 25, 15, 10, 8, 5, 2],
-          backgroundColor: [
-            '#4caf50', // Green
-            '#2196f3', // Blue
-            '#ff9800', // Orange
-            '#f44336', // Red
-            '#9c27b0', // Purple
-            '#ffeb3b', // Yellow
-            '#795548', // Brown
+    switch (chartType) {
+      case "attendance":
+        return {
+          ...baseOptions,
+          datasets: [
+            {
+              label: "Attendance",
+              data: [120,150,180,210,190,240,280,320,290,350,380,420],
+              backgroundColor: "rgba(33,150,243,0.6)",
+              borderColor: "#2196f3",
+              borderWidth: 2,
+            },
           ],
-          borderWidth: 1,
-        },
-      ],
-    };
+        };
 
-    const growthData = {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      datasets: [
-        {
-          label: 'New Users',
-          data: [50, 60, 70, 85, 95, 110, 125, 140, 155, 170, 190, 210],
-          borderColor: '#4caf50',
-          backgroundColor: 'rgba(76, 175, 80, 0.1)',
-          borderWidth: 2,
-          fill: true,
-        },
-        {
-          label: 'Event Registrations',
-          data: [70, 85, 100, 120, 140, 160, 190, 220, 250, 280, 310, 350],
-          borderColor: '#2196f3',
-          backgroundColor: 'rgba(33, 150, 243, 0.1)',
-          borderWidth: 2,
-          fill: true,
-        },
-      ],
-    };
+      case "categories":
+        return {
+          labels: ["Music","Technology","Business","Sports","Arts","Food","Education"],
+          datasets: [
+            {
+              data: [35,25,15,10,8,5,2],
+              backgroundColor: [
+                "#4caf50","#2196f3","#ff9800",
+                "#f44336","#9c27b0","#ffeb3b","#795548",
+              ],
+            },
+          ],
+        };
 
-    switch (chartType) {
-      case 'revenue':
-        return revenueData;
-      case 'attendance':
-        return attendanceData;
-      case 'categories':
-        return categoriesData;
-      case 'growth':
-        return growthData;
+      case "growth":
+        return {
+          ...baseOptions,
+          datasets: [
+            {
+              label: "New Users",
+              data: [50,60,70,85,95,110,125,140,155,170,190,210],
+              borderColor: "#4caf50",
+              backgroundColor: "rgba(76,175,80,0.1)",
+              fill: true,
+            },
+            {
+              label: "Registrations",
+              data: [70,85,100,120,140,160,190,220,250,280,310,350],
+              borderColor: "#2196f3",
+              backgroundColor: "rgba(33,150,243,0.1)",
+              fill: true,
+            },
+          ],
+        };
+
+      case "revenue":
       default:
-        return revenueData;
+        return {
+          ...baseOptions,
+          datasets: [
+            {
+              label: "Revenue",
+              data: [4500,5200,6800,5900,6000,7200,8500,9200,8700,9500,10200,11500],
+              backgroundColor: "rgba(76,175,80,0.6)",
+              borderColor: "#4caf50",
+              borderWidth: 2,
+            },
+          ],
+        };
     }
-  };
+  }, [chartType]);
 
-  const renderChart = () => {
-    const data = processData();
-    const options = {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'top',
-        },
-        title: {
-          display: true,
-          text: getChartTitle(),
-          font: {
-            size: 16,
-          },
-        },
+  /* =========================
+     CHART OPTIONS
+  ========================= */
+  const chartOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: "top" },
+      title: {
+        display: true,
+        text: getChartTitle(chartType),
+        font: { size: 16 },
       },
-    };
+    },
+  }), [chartType]);
 
-    switch (chartType) {
-      case 'revenue':
-        return <Bar data={data} options={options} height={300} />;
-      case 'attendance':
-        return <Bar data={data} options={options} height={300} />;
-      case 'categories':
-        return <Doughnut data={data} options={options} height={300} />;
-      case 'growth':
-        return <Line data={data} options={options} height={300} />;
-      default:
-        return <Bar data={data} options={options} height={300} />;
+  /* =========================
+     RENDER CHART
+  ========================= */
+  const renderChart = () => {
+    if (chartType === "categories") {
+      return <Doughnut data={chartData} options={chartOptions} />;
     }
-  };
 
-  const getChartTitle = () => {
-    switch (chartType) {
-      case 'revenue':
-        return 'Monthly Revenue';
-      case 'attendance':
-        return 'Event Attendance';
-      case 'categories':
-        return 'Event Categories Distribution';
-      case 'growth':
-        return 'Growth Trends';
-      default:
-        return 'Event Analytics';
+    if (chartType === "growth") {
+      return <Line data={chartData} options={chartOptions} />;
     }
+
+    return <Bar data={chartData} options={chartOptions} />;
   };
 
   return (
     <div className="analytics-container">
       <div className="analytics-header">
         <h2>Event Analytics</h2>
+
         <div className="analytics-controls">
           <div className="chart-type-selector">
-            <button 
-              className={chartType === 'revenue' ? 'active' : ''}
-              onClick={() => setChartType('revenue')}
-            >
-              <FaChartBar /> Revenue
-            </button>
-            <button 
-              className={chartType === 'attendance' ? 'active' : ''}
-              onClick={() => setChartType('attendance')}
-            >
-              <FaChartBar /> Attendance
-            </button>
-            <button 
-              className={chartType === 'categories' ? 'active' : ''}
-              onClick={() => setChartType('categories')}
-            >
-              <FaChartPie /> Categories
-            </button>
-            <button 
-              className={chartType === 'growth' ? 'active' : ''}
-              onClick={() => setChartType('growth')}
-            >
-              <FaChartLine /> Growth
-            </button>
+            <ChartButton
+              active={chartType === "revenue"}
+              onClick={() => setChartType("revenue")}
+              icon={<FaChartBar />}
+              label="Revenue"
+            />
+            <ChartButton
+              active={chartType === "attendance"}
+              onClick={() => setChartType("attendance")}
+              icon={<FaChartBar />}
+              label="Attendance"
+            />
+            <ChartButton
+              active={chartType === "categories"}
+              onClick={() => setChartType("categories")}
+              icon={<FaChartPie />}
+              label="Categories"
+            />
+            <ChartButton
+              active={chartType === "growth"}
+              onClick={() => setChartType("growth")}
+              icon={<FaChartLine />}
+              label="Growth"
+            />
           </div>
+
           <div className="time-range-selector">
-            <button 
-              className={timeRange === 'week' ? 'active' : ''}
-              onClick={() => setTimeRange('week')}
-            >
-              Week
-            </button>
-            <button 
-              className={timeRange === 'month' ? 'active' : ''}
-              onClick={() => setTimeRange('month')}
-            >
-              Month
-            </button>
-            <button 
-              className={timeRange === 'year' ? 'active' : ''}
-              onClick={() => setTimeRange('year')}
-            >
-              Year
-            </button>
+            {["week","month","year"].map((range) => (
+              <button
+                key={range}
+                className={timeRange === range ? "active" : ""}
+                onClick={() => setTimeRange(range)}
+              >
+                {range.charAt(0).toUpperCase() + range.slice(1)}
+              </button>
+            ))}
           </div>
         </div>
       </div>
+
       <div className="analytics-chart">
         {renderChart()}
       </div>
+
+      {/* SUMMARY */}
       <div className="analytics-summary">
-        <div className="summary-card">
-          <h3>Total Revenue</h3>
-          <p className="summary-value">$85,700</p>
-          <p className="summary-change positive">+12.5% from last period</p>
-        </div>
-        <div className="summary-card">
-          <h3>Total Attendance</h3>
-          <p className="summary-value">2,530</p>
-          <p className="summary-change positive">+8.3% from last period</p>
-        </div>
-        <div className="summary-card">
-          <h3>Conversion Rate</h3>
-          <p className="summary-value">68.4%</p>
-          <p className="summary-change positive">+5.2% from last period</p>
-        </div>
-        <div className="summary-card">
-          <h3>Avg. Ticket Price</h3>
-          <p className="summary-value">$42.50</p>
-          <p className="summary-change negative">-2.1% from last period</p>
-        </div>
+        <SummaryCard title="Total Revenue" value="$85,700" change="+12.5%" />
+        <SummaryCard title="Total Attendance" value="2,530" change="+8.3%" />
+        <SummaryCard title="Conversion Rate" value="68.4%" change="+5.2%" />
+        <SummaryCard title="Avg. Ticket Price" value="$42.50" change="-2.1%" negative />
       </div>
     </div>
   );
 };
+
+/* =========================
+   HELPERS
+========================= */
+const getChartTitle = (type) => ({
+  revenue: "Monthly Revenue",
+  attendance: "Event Attendance",
+  categories: "Event Categories Distribution",
+  growth: "Growth Trends",
+}[type] || "Event Analytics");
+
+const ChartButton = ({ active, onClick, icon, label }) => (
+  <button className={active ? "active" : ""} onClick={onClick}>
+    {icon} {label}
+  </button>
+);
+
+const SummaryCard = ({ title, value, change, negative }) => (
+  <div className="summary-card">
+    <h3>{title}</h3>
+    <p className="summary-value">{value}</p>
+    <p className={`summary-change ${negative ? "negative" : "positive"}`}>
+      {change} from last period
+    </p>
+  </div>
+);
 
 export default EventAnalytics;

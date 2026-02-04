@@ -1,49 +1,54 @@
-import React, { useState } from 'react';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import format from 'date-fns/format';
-import parse from 'date-fns/parse';
-import startOfWeek from 'date-fns/startOfWeek';
-import getDay from 'date-fns/getDay';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { useMemo, useState } from "react";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import { format, parse, startOfWeek, getDay } from "date-fns";
+import enUS from "date-fns/locale/en-US";
+import { useNavigate } from "react-router-dom";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
-import enUS from 'date-fns/locale/en-US';
-
-const locales = {
-  'en-US': enUS,
-};
-
+/* =========================
+   LOCALIZER
+========================= */
 const localizer = dateFnsLocalizer({
   format,
   parse,
   startOfWeek,
   getDay,
-  locales,
+  locales: { "en-US": enUS },
 });
 
-const EventCalendar = ({ events }) => {
-  const [view, setView] = useState('month');
+/* =========================
+   COMPONENT
+========================= */
+const EventCalendar = ({ events = [] }) => {
+  const [view, setView] = useState("month");
+  const navigate = useNavigate();
 
-  // Transform events to the format expected by react-big-calendar
-  const calendarEvents = events.map(event => ({
-    id: event._id,
-    title: event.title,
-    start: new Date(event.date),
-    end: new Date(event.date),
-    allDay: true,
-    resource: event,
-  }));
+  /* =========================
+     MAP EVENTS
+  ========================= */
+  const calendarEvents = useMemo(
+    () =>
+      events.map((e) => ({
+        id: e._id,
+        title: e.title,
+        start: new Date(e.date),
+        end: new Date(e.date),
+        allDay: true,
+      })),
+    [events]
+  );
 
-  const eventStyleGetter = (event) => {
-    return {
-      style: {
-        backgroundColor: '#4caf50',
-        borderRadius: '5px',
-        color: 'white',
-        border: 'none',
-        display: 'block',
-      },
-    };
-  };
+  /* =========================
+     EVENT STYLE
+  ========================= */
+  const eventStyleGetter = () => ({
+    style: {
+      backgroundColor: "#4caf50",
+      color: "#fff",
+      borderRadius: "5px",
+      border: "none",
+    },
+  });
 
   return (
     <div className="calendar-container">
@@ -52,12 +57,12 @@ const EventCalendar = ({ events }) => {
         events={calendarEvents}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 500 }}
-        views={['month', 'week', 'day', 'agenda']}
+        height={500}
         view={view}
-        onView={(newView) => setView(newView)}
+        views={["month", "week", "day", "agenda"]}
+        onView={setView}
         eventPropGetter={eventStyleGetter}
-        onSelectEvent={(event) => window.location.href = `/events/${event.id}`}
+        onSelectEvent={(event) => navigate(`/events/${event.id}`)}
         popup
       />
     </div>

@@ -1,45 +1,50 @@
-import React, { Component } from 'react';
-import ErrorState from './ErrorState';
+import { Component } from "react";
+import ErrorState from "./ErrorState";
 
 class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
-  }
+  state = {
+    hasError: false,
+    error: null,
+    errorInfo: null,
+  };
 
   static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI
-    return { hasError: true };
+    return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
-    // You can log the error to an error reporting service
-    console.error('ErrorBoundary caught an error', error, errorInfo);
-    this.setState({
-      error: error,
-      errorInfo: errorInfo
-    });
+    // Log error (can be replaced with Sentry / LogRocket)
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+
+    this.setState({ errorInfo });
   }
 
+  handleRetry = () => {
+    window.location.reload();
+  };
+
   render() {
-    if (this.state.hasError) {
+    const { hasError, error, errorInfo } = this.state;
+    const { children, showDetails = false } = this.props;
+
+    if (hasError) {
       return (
-        <ErrorState 
-          message="We're sorry, but there was an error loading this component."
-          onRetry={() => window.location.reload()}
+        <ErrorState
+          message="Something went wrong while loading this section."
+          onRetry={this.handleRetry}
         >
-          {this.props.showDetails && this.state.error && (
+          {showDetails && error && (
             <details className="error-details">
               <summary>Error Details</summary>
-              <p>{this.state.error.toString()}</p>
-              <pre>{this.state.errorInfo?.componentStack}</pre>
+              <p>{error.toString()}</p>
+              <pre>{errorInfo?.componentStack}</pre>
             </details>
           )}
         </ErrorState>
       );
     }
 
-    return this.props.children;
+    return children;
   }
 }
 

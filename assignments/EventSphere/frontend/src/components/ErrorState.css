@@ -1,3 +1,20 @@
+/* =========================
+   VARIABLES
+========================= */
+:root {
+  --error-bg: #fff1f0;
+  --error-border: #ffccc7;
+  --error-title: #cf1322;
+  --error-text: #434343;
+  --primary: #1890ff;
+  --primary-hover: #40a9ff;
+  --code-bg: #f5f5f5;
+  --radius: 8px;
+}
+
+/* =========================
+   ERROR CONTAINER
+========================= */
 .error-container {
   display: flex;
   flex-direction: column;
@@ -6,55 +23,63 @@
   padding: 2rem;
   margin: 1rem auto;
   max-width: 800px;
-  background-color: #fff1f0;
-  border: 1px solid #ffccc7;
-  border-radius: 8px;
+  background-color: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: var(--radius);
   text-align: center;
 }
 
+/* =========================
+   TEXT
+========================= */
 .error-container h2 {
-  color: #cf1322;
+  color: var(--error-title);
   margin-bottom: 1rem;
 }
 
 .error-container p {
-  color: #434343;
+  color: var(--error-text);
   margin-bottom: 1.5rem;
-  white-space: pre-line; /* Preserves line breaks in error messages */
-  max-width: 100%;
-  overflow-wrap: break-word;
+  white-space: pre-line;
+  word-break: break-word;
 }
 
+/* =========================
+   ACTION BUTTON
+========================= */
 .refresh-btn {
-  background-color: #1890ff;
-  color: white;
+  background-color: var(--primary);
+  color: #fff;
   border: none;
   border-radius: 4px;
   padding: 8px 16px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.25s ease;
 }
 
 .refresh-btn:hover {
-  background-color: #40a9ff;
+  background-color: var(--primary-hover);
 }
 
+/* =========================
+   ERROR DETAILS
+========================= */
 .error-details {
   margin-top: 1.5rem;
-  text-align: left;
   width: 100%;
+  text-align: left;
 }
 
 .error-details summary {
   cursor: pointer;
-  color: #1890ff;
+  color: var(--primary);
   font-weight: 500;
   margin-bottom: 0.5rem;
 }
 
 .error-details pre {
-  background-color: #f5f5f5;
+  background-color: var(--code-bg);
   padding: 1rem;
   border-radius: 4px;
   overflow-x: auto;

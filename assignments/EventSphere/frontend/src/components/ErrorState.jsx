@@ -1,17 +1,29 @@
-import React from 'react';
-import './ErrorState.css';
+import "./ErrorState.css";
 
-const ErrorState = ({ 
-  message = 'Something went wrong', 
-  onRetry = () => window.location.reload() 
+const ErrorState = ({
+  title = "Error",
+  message = "Something went wrong",
+  onRetry,
+  children,
 }) => {
+  const handleRetry = () => {
+    if (onRetry) {
+      onRetry();
+    } else {
+      window.location.reload();
+    }
+  };
+
   return (
-    <div className="error-container">
-      <h2>Error</h2>
+    <div className="error-container" role="alert">
+      <h2>{title}</h2>
       <p>{message}</p>
-      <button className="refresh-btn" onClick={onRetry}>
+
+      <button className="refresh-btn" onClick={handleRetry}>
         Try Again
       </button>
+
+      {children}
     </div>
   );
 };

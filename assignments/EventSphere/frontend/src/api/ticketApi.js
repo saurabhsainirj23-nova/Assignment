@@ -1,67 +1,41 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from "./axiosInstance";
 
-// Create a new ticket (for admin/dashboard)
-export const createTicket = async (ticketData) => {
+/**
+ * Generic API handler (DRY principle)
+ */
+const apiRequest = async (method, url, data = null) => {
   try {
-    const response = await axiosInstance.post('/tickets/create', ticketData);
+    const response = await axiosInstance({ method, url, data });
     return response.data;
   } catch (error) {
-    console.error('Error creating ticket:', error);
-    throw error;
+    throw error.response?.data || error.message;
   }
 };
 
-// Register for an event with ticket details
-export const registerTicket = async (eventId, ticketData) => {
-  try {
-    const response = await axiosInstance.post(`/tickets/${eventId}/register`, ticketData);
-    return response.data;
-  } catch (error) {
-    console.error('Error registering ticket:', error);
-    throw error;
-  }
-};
+/* ============================
+   TICKET APIs
+============================ */
 
-// Get user's ticket registrations
-export const getUserTickets = async (userId) => {
-  try {
-    const response = await axiosInstance.get(`/tickets/user/${userId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching user tickets:', error);
-    throw error;
-  }
-};
+/** Create a new ticket (Admin/Dashboard) */
+export const createTicket = (ticketData) =>
+  apiRequest("post", "/tickets/create", ticketData);
 
-// Get ticket by booking ID
-export const getTicketByBookingId = async (bookingId) => {
-  try {
-    const response = await axiosInstance.get(`/tickets/booking/${bookingId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching ticket:', error);
-    throw error;
-  }
-};
+/** Register ticket for an event */
+export const registerTicket = (eventId, ticketData) =>
+  apiRequest("post", `/tickets/${eventId}/register`, ticketData);
 
-// Generate QR code for a booking ID
-export const generateQRCode = async (bookingId) => {
-  try {
-    const response = await axiosInstance.get(`/tickets/qr-code/${bookingId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error generating QR code:', error);
-    throw error;
-  }
-};
+/** Get tickets of a specific user */
+export const getUserTickets = (userId) =>
+  apiRequest("get", `/tickets/user/${userId}`);
 
-// Read QR code and verify ticket
-export const verifyTicketQRCode = async (bookingId) => {
-  try {
-    const response = await axiosInstance.post('/tickets/read-qr-code', { bookingId });
-    return response.data;
-  } catch (error) {
-    console.error('Error verifying ticket QR code:', error);
-    throw error;
-  }
-};
+/** Get ticket using booking ID */
+export const getTicketByBookingId = (bookingId) =>
+  apiRequest("get", `/tickets/booking/${bookingId}`);
+
+/** Generate QR code for a booking */
+export const generateQRCode = (bookingId) =>
+  apiRequest("get", `/tickets/qr-code/${bookingId}`);
+
+/** Verify ticket QR code */
+export const verifyTicketQRCode = (bookingId) =>
+  apiRequest("post", "/tickets/read-qr-code", { bookingId });

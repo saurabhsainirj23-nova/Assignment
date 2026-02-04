@@ -1,11 +1,35 @@
+/* =========================
+   VARIABLES
+========================= */
+:root {
+  --bg-white: #ffffff;
+  --bg-light: #f5f7fa;
+  --text-dark: #333;
+  --text-muted: #666;
+  --text-soft: #555;
+
+  --primary: #4caf50;
+  --danger: #f44336;
+
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --radius-sm: 5px;
+  --radius-md: 8px;
+}
+
+/* =========================
+   CONTAINER
+========================= */
 .analytics-container {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background-color: var(--bg-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
+/* =========================
+   HEADER
+========================= */
 .analytics-header {
   display: flex;
   justify-content: space-between;
@@ -19,9 +43,12 @@
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-dark);
 }
 
+/* =========================
+   CONTROLS
+========================= */
 .analytics-controls {
   display: flex;
   gap: 1rem;
@@ -31,8 +58,8 @@
 .chart-type-selector,
 .time-range-selector {
   display: flex;
-  background-color: #f5f7fa;
-  border-radius: 5px;
+  background-color: var(--bg-light);
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
@@ -43,29 +70,35 @@
   padding: 0.5rem 1rem;
   cursor: pointer;
   font-size: 0.9rem;
-  color: #555;
+  color: var(--text-soft);
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .chart-type-selector button.active,
 .time-range-selector button.active {
-  background-color: #4caf50;
-  color: white;
+  background-color: var(--primary);
+  color: #fff;
 }
 
 .chart-type-selector button:hover,
 .time-range-selector button:hover {
-  background-color: rgba(76, 175, 80, 0.1);
+  background-color: rgba(76, 175, 80, 0.12);
 }
 
+/* =========================
+   CHART
+========================= */
 .analytics-chart {
   height: 350px;
   margin-bottom: 1.5rem;
 }
 
+/* =========================
+   SUMMARY
+========================= */
 .analytics-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -74,29 +107,28 @@
 }
 
 .summary-card {
-  background-color: #f5f7fa;
-  border-radius: 8px;
+  background-color: var(--bg-light);
+  border-radius: var(--radius-md);
   padding: 1rem;
   text-align: center;
 }
 
 .summary-card h3 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem;
   font-size: 0.9rem;
-  color: #666;
   font-weight: 500;
+  color: var(--text-muted);
 }
 
 .summary-value {
   font-size: 1.8rem;
   font-weight: bold;
   margin: 0.5rem 0;
-  color: #333;
+  color: var(--text-dark);
 }
 
 .summary-change {
   font-size: 0.8rem;
-  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,28 +136,31 @@
 }
 
 .summary-change.positive {
-  color: #4caf50;
+  color: var(--primary);
 }
 
 .summary-change.negative {
-  color: #f44336;
+  color: var(--danger);
 }
 
+/* =========================
+   RESPONSIVE
+========================= */
 @media (max-width: 768px) {
   .analytics-header {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .analytics-controls {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .analytics-chart {
     height: 300px;
   }
-  
+
   .analytics-summary {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -135,13 +170,13 @@
   .analytics-summary {
     grid-template-columns: 1fr;
   }
-  
+
   .chart-type-selector,
   .time-range-selector {
-    flex-wrap: wrap;
     width: 100%;
+    flex-wrap: wrap;
   }
-  
+
   .chart-type-selector button,
   .time-range-selector button {
     flex: 1;

@@ -1,38 +1,66 @@
+/* =========================
+   VARIABLES
+========================= */
+:root {
+  --bg-white: #ffffff;
+  --bg-hover: #f9f9f9;
+  --border-light: #eee;
+
+  --text-dark: #333;
+  --text-muted: #666;
+  --text-soft: #999;
+
+  --primary: #4a6cf7;
+  --danger: #f44336;
+  --favorite: #f9c74f;
+
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --radius: 8px;
+}
+
+/* =========================
+   CONTAINER
+========================= */
 .event-favorites {
   width: 100%;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--bg-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   overflow: hidden;
 }
 
+/* =========================
+   HEADER
+========================= */
 .favorites-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .favorites-header h3 {
   margin: 0;
   font-size: 1.1rem;
-  color: #333;
+  color: var(--text-dark);
 }
 
 .toggle-favorites {
   background: none;
   border: none;
-  color: #4a6cf7;
+  color: var(--primary);
   font-size: 0.9rem;
   cursor: pointer;
-  padding: 0;
 }
 
 .toggle-favorites:hover {
   text-decoration: underline;
 }
 
+/* =========================
+   LIST
+========================= */
 .favorites-list {
   list-style: none;
   margin: 0;
@@ -44,8 +72,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #eee;
-  transition: background-color 0.2s;
+  border-bottom: 1px solid var(--border-light);
+  transition: background-color 0.2s ease;
 }
 
 .favorite-item:last-child {
@@ -53,9 +81,12 @@
 }
 
 .favorite-item:hover {
-  background-color: #f9f9f9;
+  background-color: var(--bg-hover);
 }
 
+/* =========================
+   CONTENT
+========================= */
 .favorite-content {
   flex: 1;
 }
@@ -63,14 +94,14 @@
 .favorite-title {
   display: block;
   font-weight: 600;
-  color: #333;
+  color: var(--text-dark);
   text-decoration: none;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   font-size: 1rem;
 }
 
 .favorite-title:hover {
-  color: #4a6cf7;
+  color: var(--primary);
 }
 
 .favorite-details {
@@ -78,77 +109,77 @@
   flex-wrap: wrap;
   gap: 1rem;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-muted);
 }
 
-.favorite-date,
-.favorite-location,
-.favorite-category {
+.favorite-details span {
   display: flex;
   align-items: center;
   gap: 0.3rem;
 }
 
-.remove-favorite {
-  background: none;
-  border: none;
-  color: #999;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.remove-favorite:hover {
-  color: #f44336;
-  background-color: rgba(244, 67, 54, 0.1);
-}
-
-.empty-favorites {
-  padding: 2rem 1.5rem;
-  text-align: center;
-  color: #666;
-}
-
-.empty-favorites-hint {
-  font-size: 0.9rem;
-  color: #999;
-  margin-top: 0.5rem;
-}
-
-/* Favorite Button Styles */
+/* =========================
+   ACTION BUTTONS
+========================= */
+.remove-favorite,
 .favorite-button {
   background: none;
   border: none;
-  color: #999;
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+}
+
+.remove-favorite {
+  color: var(--text-soft);
+}
+
+.remove-favorite:hover {
+  color: var(--danger);
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.favorite-button {
+  color: var(--text-soft);
 }
 
 .favorite-button:hover {
-  color: #f9c74f;
+  color: var(--favorite);
   background-color: rgba(249, 199, 79, 0.1);
 }
 
 .favorite-button.is-favorite {
-  color: #f9c74f;
+  color: var(--favorite);
 }
 
-/* Responsive styles */
+/* =========================
+   EMPTY STATE
+========================= */
+.empty-favorites {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-favorites-hint {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  margin-top: 0.5rem;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
 @media (max-width: 768px) {
   .favorite-details {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .favorite-item {
     padding: 0.75rem 1rem;
   }

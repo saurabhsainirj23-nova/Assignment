@@ -1,32 +1,39 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from "./axiosInstance";
+
+/**
+ * Generic API handler
+ */
+const apiRequest = async (method, url, data = null) => {
+  try {
+    const response = await axiosInstance({
+      method,
+      url,
+      data,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
 
 /**
  * Register a new user
- * @param {Object} userData - User registration data (name, email, password)
- * @returns {Promise} - Response with user data and token
  */
-export const signup = async (userData) => {
-  // Remove confirmPassword if it exists in userData
-  const { confirmPassword, ...userDataToSend } = userData;
-  const response = await axiosInstance.post('/auth/signup', userDataToSend);
-  return response.data;
+export const signup = (userData) => {
+  const { confirmPassword, ...payload } = userData;
+  return apiRequest("post", "/auth/signup", payload);
 };
 
 /**
  * Login a user
- * @param {Object} credentials - User login credentials
- * @returns {Promise} - Response with user data and token
  */
-export const loginUser = async (credentials) => {
-  const response = await axiosInstance.post('/auth/login', credentials);
-  return response.data;
+export const loginUser = (credentials) => {
+  return apiRequest("post", "/auth/login", credentials);
 };
 
 /**
- * Verify authentication token (optional)
- * @returns {Promise} - Response with user data if token is valid
+ * Verify authentication token
  */
-export const verifyAuth = async () => {
-  const response = await axiosInstance.get('/auth/verify');
-  return response.data;
+export const verifyAuth = () => {
+  return apiRequest("get", "/auth/verify");
 };
