@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { fetchEvents } from '../api/eventApi';
 import axios from '../api/axiosInstance';
 import LoadingState from '../components/LoadingState';
-import ErrorState from '../components/ErrorState';
 import EventManagement from '../components/admin/EventManagement';
 import UserManagement from '../components/admin/UserManagement';
 import TicketManagement from '../components/admin/TicketManagement';
@@ -118,7 +117,6 @@ const AdminDashboard = () => {
   };
 
   if (loading) return <LoadingState message="Loading admin dashboard..." />;
-  if (error) return <ErrorState message={error} />;
 
   // Check if user is admin
   if (!user || user.role !== 'admin') {

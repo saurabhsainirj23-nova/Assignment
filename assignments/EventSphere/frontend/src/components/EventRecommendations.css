@@ -1,0 +1,35 @@
+.event-recommendations {
+  padding: 20px 0;
+  margin: 20px 0;
+}
+
+.recommendations-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.recommendations-header h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.recommendation-reason {
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+}
+
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.loading-recommendations {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}

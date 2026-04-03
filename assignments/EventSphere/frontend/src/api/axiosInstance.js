@@ -5,9 +5,6 @@ const API = axios.create({
   withCredentials: true,
 });
 
-/* ============================
-   REQUEST INTERCEPTOR
-============================ */
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -19,26 +16,18 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-/* ============================
-   RESPONSE INTERCEPTOR
-============================ */
 API.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
 
-    // JWT expired or unauthorized
     if (status === 401) {
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       window.location.href = "/login";
     }
 
-    // Network error (server down)
-    if (error.code === "ERR_NETWORK") {
-      return Promise.reject("Server is not reachable. Please try again later.");
-    }
-
-    return Promise.reject(error.response?.data || error.message);
+    return Promise.reject(error);
   }
 );
 

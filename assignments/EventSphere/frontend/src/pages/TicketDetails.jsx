@@ -19,9 +19,10 @@ const TicketDetails = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   
-  // Extract eventId from URL query parameters
+  // Extract eventId or bookingId from URL query parameters
   const queryParams = new URLSearchParams(location.search);
   const eventId = queryParams.get('event');
+  const bookingId = queryParams.get('bookingId');
   
   useEffect(() => {
     // Redirect to login if not authenticated
@@ -31,7 +32,7 @@ const TicketDetails = () => {
     }
     
     const loadTicketDetails = async () => {
-      if (!eventId || !user) return;
+      if (!user) return;
       
       try {
         setLoading(true);
@@ -39,16 +40,37 @@ const TicketDetails = () => {
         // Get user's registered events
         const registeredEvents = await fetchUserRegisteredEvents();
         
-        // Find the registration for this specific event
-        const eventRegistration = registeredEvents.find(reg => reg._id === eventId || reg.eventId === eventId);
+        // Find the registration - either by eventId or bookingId
+        let eventRegistration = null;
+        if (eventId) {
+          eventRegistration = registeredEvents.find(reg => reg._id === eventId || reg.eventId === eventId);
+        } else if (bookingId) {
+          eventRegistration = registeredEvents.find(reg => reg.bookingId === bookingId);
+        }
         
         if (!eventRegistration) {
+          // If no registration found in user's list, try fetching by bookingId directly
+          if (bookingId) {
+            try {
+              const ticketData = await getTicketByBookingId(bookingId);
+              setTicket(ticketData);
+              setError(null);
+              setLoading(false);
+              return;
+            } catch (e) {
+              setError('Ticket not found');
+              setLoading(false);
+              return;
+            }
+          }
           setError('No ticket found for this event');
+          setLoading(false);
           return;
         }
         
         // Get event details
-        const eventDetails = await fetchEventById(eventId);
+        const eventIdToFetch = eventRegistration.eventId || eventRegistration._id;
+        const eventDetails = await fetchEventById(eventIdToFetch);
         
         // Create ticket object with combined data
         const ticketData = {
@@ -68,7 +90,7 @@ const TicketDetails = () => {
     };
     
     loadTicketDetails();
-  }, [eventId, isAuthenticated, user, navigate, location]);
+  }, [eventId, bookingId, isAuthenticated, user, navigate, location]);
 
   const handleGenerateQR = async () => {
     if (!ticket || !ticket.bookingId) return;

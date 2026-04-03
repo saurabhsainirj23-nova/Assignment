@@ -141,7 +141,7 @@ const UserTickets = () => {
   };
   
   const navigateToTicketDetails = (bookingId) => {
-    navigate(`/ticket-details/${bookingId}`);
+    navigate(`/ticket-details?bookingId=${bookingId}`);
   };
   
   const closeModal = () => {

@@ -163,23 +163,34 @@ const TicketRegistrationForm = ({ eventId, eventDetails }) => {
     try {
       // Prepare registration data
       const registrationData = {
+        userId: user?.id || user?._id,
         eventId,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
         ticketType: formData.ticketType,
-        ticketQuantity: formData.ticketQuantity,
-        selectedSeats: formData.selectedSeats,
-        specialRequirements: formData.specialRequirements,
+        quantity: formData.ticketQuantity,
+        totalAmount,
         paymentMethod,
-        totalAmount
+        attendeeDetails: {
+          fullName: formData.name,
+          email: formData.email,
+          phone: formData.phone
+        },
+        specialRequests: formData.specialRequirements,
+        selectedSeats: formData.selectedSeats
       };
       
       // Submit registration
       const response = await axiosInstance.post('/registrations', registrationData);
       
-      // Navigate to confirmation page
-      navigate(`/confirmation/${response.data.registrationId}`);
+      // Get registration ID from response
+      const registrationId = response.data?.registrationId || response.registrationId;
+      const bookingId = response.data?.bookingId || response.bookingId;
+      
+      // Navigate to confirmation page with both IDs
+      if (registrationId) {
+        navigate(`/ticket-confirmation/${registrationId}`);
+      } else {
+        throw new Error('Registration failed - no confirmation received');
+      }
     } catch (error) {
       console.error('Registration error:', error);
       

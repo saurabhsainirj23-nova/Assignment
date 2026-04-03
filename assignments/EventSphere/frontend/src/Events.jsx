@@ -27,11 +27,6 @@ const Events = () => {
     getEvents();
   }, []);
 
-  const handleRegister = (eventId) => {
-    // Navigate to basic registration page first
-    navigate(`/basic-registration?event=${eventId}`);
-  };
-
   return (
     <div className="events-page">
       <header className="events-header">
@@ -62,31 +57,42 @@ const Events = () => {
 
               <div className="event-card-actions">
                 <button 
+                  className="details-btn"
+                  onClick={() => navigate(`/events/${event._id}`)}
+                >
+                  View Details
+                </button>
+                <button 
                   className="register-btn"
-                  onClick={() => handleRegister(event._id)}
+                  onClick={() => {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                      navigate(`/login?redirect=/ticket-registration?event=${event._id}`);
+                      return;
+                    }
+                    navigate(`/ticket-registration?event=${event._id}`);
+                  }}
                 >
                   Register Now
                 </button>
                 <button 
-                className="ticket-btn"
-                onClick={() => {
-                  // First check if user is authenticated, if not redirect to login
-                  const token = localStorage.getItem('token');
-                  if (!token) {
-                    navigate(`/login?redirect=${encodeURIComponent(`/ticket-registration?event=${event._id}`)}`);
-                    return;
-                  }
-                  // If authenticated, navigate directly to ticket registration page
-                  navigate(`/ticket-registration?event=${event._id}`);
-                }}
-              >
-                Get Ticket
-              </button>
+                  className="ticket-btn"
+                  onClick={() => {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                      navigate(`/login?redirect=/dashboard?tab=tickets`);
+                      return;
+                    }
+                    navigate('/dashboard?tab=tickets');
+                  }}
+                >
+                  My Tickets
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-    )}
+          ))}
+        </div>
+      )}
     </div>
   );
 };

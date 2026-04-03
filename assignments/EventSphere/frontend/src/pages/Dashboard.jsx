@@ -3,11 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { fetchEvents, fetchUserRegisteredEvents, cancelEventRegistration } from '../api/eventApi';
 import LoadingState from '../components/LoadingState';
-import ErrorState from '../components/ErrorState';
 import EventCalendar from '../components/Calendar';
 import EventAnalytics from '../components/EventAnalytics';
 import EventFilters from '../components/EventFilters';
-import EventFavorites, { FavoriteButton, withFavorites } from '../components/EventFavorites';
+import EventFavorites from '../components/EventFavorites';
 import UserProfile from '../components/UserProfile';
 import UserTickets from '../components/UserTickets';
 import './Dashboard.css';
@@ -225,17 +224,6 @@ const Dashboard = () => {
     );
   }
   
-  if (error) {
-    return (
-      <div className="dashboard-container">
-        <ErrorState 
-          message={error} 
-          onRetry={() => window.location.reload()} 
-        />
-      </div>
-    );
-  }
-  
   // Chart data for attendance trends
   const attendanceData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -416,6 +404,12 @@ const Dashboard = () => {
               <div className="widget-row full-width">
                 <div className="widget user-profile-widget">
                   <UserProfile />
+                  <button 
+                    className="settings-link-btn"
+                    onClick={() => navigate('/settings')}
+                  >
+                    Open Full Settings
+                  </button>
                 </div>
               </div>
             ) : (

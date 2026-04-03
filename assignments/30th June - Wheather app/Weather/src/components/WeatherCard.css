@@ -1,13 +1,15 @@
-.card {
-  background-color: #f2f2f2;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  margin: 10px;
+.weather-card {
+  width: 100%;
 }
 
-.weather-icon {
-  width: 100px;
-  height: 100px;
+.weather-card .card {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
+.weather-card .weather-icon {
+  width: auto;
+  height: auto;
 }

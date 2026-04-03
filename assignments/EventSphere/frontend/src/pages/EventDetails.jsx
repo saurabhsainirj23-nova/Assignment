@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { fetchEventById, checkEventRegistration } from '../api/eventApi';
 import LoadingState from '../components/LoadingState';
-import ErrorState from '../components/ErrorState';
 import SeatSelection from '../components/SeatSelection';
 import { useAuth } from '../context/AuthContext';
 import { FaEdit } from 'react-icons/fa';
@@ -113,12 +112,6 @@ const EventDetails = () => {
   if (loading) {
     return <div className="event-details-container">
       <LoadingState message="Loading event details..." />
-    </div>;
-  }
-
-  if (error) {
-    return <div className="event-details-container">
-      <ErrorState message={error} onRetry={() => window.location.reload()} />
     </div>;
   }
 

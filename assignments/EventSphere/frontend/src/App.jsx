@@ -1,35 +1,39 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
-import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Home from './pages/Home';
-import Events from './Events';
-import EventDetails from './pages/EventDetails';
-import GetTicket from './pages/GetTicket';
-import TicketDetails from './pages/TicketDetails';
-import AuthPage from './pages/AuthPage';
-import Contact from './pages/Contact';
-import FAQ from './pages/FAQ';
-import AboutUs from './pages/AboutUs';
-import Dashboard from './pages/Dashboard';
-import NotFound from './pages/NotFound';
-import TicketRegistration from './pages/TicketRegistration';
-import TicketConfirmation from './pages/TicketConfirmation';
-import CreateEvent from './pages/CreateEvent';
-import MakeAdmin from './pages/MakeAdmin';
-import EventRegistration from './pages/EventRegistration'; // ✅ FIXED import
+import LoadingState from './components/LoadingState';
+import Chatbot from './components/Chatbot';
+import AnalyticsDashboard from './components/AnalyticsDashboard';
 import { AuthProvider } from './context/AuthContext';
+
+const Home = lazy(() => import('./pages/Home'));
+const Events = lazy(() => import('./Events'));
+const EventDetails = lazy(() => import('./pages/EventDetails'));
+const GetTicket = lazy(() => import('./pages/GetTicket'));
+const TicketDetails = lazy(() => import('./pages/TicketDetails'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const Contact = lazy(() => import('./pages/Contact'));
+const FAQ = lazy(() => import('./pages/FAQ'));
+const AboutUs = lazy(() => import('./pages/AboutUs'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const TicketRegistration = lazy(() => import('./pages/TicketRegistration'));
+const TicketConfirmation = lazy(() => import('./pages/TicketConfirmation'));
+const CreateEvent = lazy(() => import('./pages/CreateEvent'));
+const MakeAdmin = lazy(() => import('./pages/MakeAdmin'));
+const EventRegistration = lazy(() => import('./pages/EventRegistration'));
+const Settings = lazy(() => import('./pages/Settings'));
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <ErrorBoundary>
-          <Navbar />
-          <main style={{ minHeight: '80vh' }}>
+        <Navbar />
+        <main style={{ minHeight: '80vh' }}>
+          <Suspense fallback={<LoadingState message="Loading..." />}>
             <Routes>
               <Route path="/" element={<Navigate to="/home" replace />} />
               <Route path="/home" element={<Home />} />
@@ -38,7 +42,7 @@ const App = () => {
               <Route path="/events/:eventId" element={<EventDetails />} />
               <Route path="/get-ticket" element={<GetTicket />} />
               <Route
-                path="/ticket-details/:bookingId"
+                path="/ticket-details"
                 element={
                   <ProtectedRoute>
                     <TicketDetails />
@@ -90,11 +94,28 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
-              <Route path="*" element={<NotFound />} />
+              <Route
+                path="/analytics"
+                element={
+                  <ProtectedRoute>
+                    <AnalyticsDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                }
+              />
+            <Route path="*" element={<NotFound />} />
             </Routes>
-          </main>
-          <Footer />
-        </ErrorBoundary>
+          </Suspense>
+        </main>
+        <Footer />
+        <Chatbot />
       </Router>
     </AuthProvider>
   );

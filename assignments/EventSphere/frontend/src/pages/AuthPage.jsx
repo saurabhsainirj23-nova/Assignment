@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { loginUser, signup } from '../api/authApi';
 import { useAuth } from '../context/AuthContext';
-import ErrorState from '../components/ErrorState';
 import { FaEye, FaEyeSlash, FaCheck, FaTimes } from 'react-icons/fa';
 import './AuthPage.css';
 
@@ -234,7 +233,8 @@ const AuthPage = () => {
       }
     } catch (err) {
       console.error('Authentication error:', err);
-      let errorMessage = err.response?.data?.message || 
+      let errorMessage = err.msg || err.message || 
+                        err.response?.data?.message || 
                         err.response?.data?.msg || 
                         'Authentication failed. Please try again.';
       
@@ -275,7 +275,6 @@ const AuthPage = () => {
       <div className="auth-card">
         <h2>{isLogin ? 'Welcome Back 👋' : 'Join EventSphere 🚀'}</h2>
         
-        {error && <ErrorState message={error} onRetry={() => setError('')} />}
         {success && <div className="auth-success">{success}</div>}
         
         <form onSubmit={handleSubmit} className="auth-form">

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import axiosInstance from '../api/axiosInstance';
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaLock, FaSave, FaCamera } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import './UserProfile.css';
 
 const UserProfile = () => {
-  const { user, updateUserProfile } = useAuth();
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -27,22 +29,49 @@ const UserProfile = () => {
   
   // Initialize form data with user data when component mounts
   useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.name || '',
-        email: user.email || '',
-        phone: user.phone || '',
-        location: user.location || '',
-        bio: user.bio || '',
-        preferences: {
-          notifications: user.preferences?.notifications !== false,
-          newsletter: user.preferences?.newsletter !== false,
-          eventReminders: user.preferences?.eventReminders !== false
-        },
-        avatar: user.avatar || null
-      });
-    }
-  }, [user]);
+    const loadUserProfile = async () => {
+      try {
+        const response = await axiosInstance.get('/auth/profile');
+        const userData = response.data;
+        
+        if (userData) {
+          setFormData({
+            name: userData.name || '',
+            email: userData.email || '',
+            phone: userData.phone || '',
+            location: userData.location || '',
+            bio: userData.bio || '',
+            preferences: {
+              notifications: userData.preferences?.notifications !== false,
+              newsletter: userData.preferences?.newsletter !== false,
+              eventReminders: userData.preferences?.eventReminders !== false
+            },
+            avatar: userData.avatar || null
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+        // Fallback to auth context user
+        if (user) {
+          setFormData({
+            name: user.name || '',
+            email: user.email || '',
+            phone: user.phone || '',
+            location: user.location || '',
+            bio: user.bio || '',
+            preferences: {
+              notifications: user.preferences?.notifications !== false,
+              newsletter: user.preferences?.newsletter !== false,
+              eventReminders: user.preferences?.eventReminders !== false
+            },
+            avatar: user.avatar || null
+          });
+        }
+      }
+    };
+    
+    loadUserProfile();
+  }, []);
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -86,20 +115,29 @@ const UserProfile = () => {
     setSuccess(false);
     
     try {
-      // In a real app, you would call an API to update the user profile
-      // For now, we'll simulate a successful update after a short delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Update profile
+      const profileResponse = await axiosInstance.put('/auth/profile', {
+        name: formData.name,
+        phone: formData.phone,
+        location: formData.location,
+        bio: formData.bio
+      });
       
-      // Call the updateUserProfile function from AuthContext
-      if (updateUserProfile) {
-        await updateUserProfile(formData);
+      // Update preferences
+      await axiosInstance.put('/auth/preferences', formData.preferences);
+      
+      // Update auth context with new user data
+      if (profileResponse.user) {
+        localStorage.setItem('user', JSON.stringify(profileResponse.user));
       }
       
+      toast.success('Profile and preferences updated successfully!');
       setSuccess(true);
       setIsEditing(false);
     } catch (err) {
-      setError('Failed to update profile. Please try again.');
-      console.error('Profile update error:', err);
+      const errMsg = err.response?.data?.msg || 'Failed to update profile';
+      setError(errMsg);
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }

@@ -1,30 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import './Home.css';
 import { Link } from 'react-router-dom';
 import { fetchEvents } from '../api/eventApi';
 import LoadingState from '../components/LoadingState';
+import EventCard from '../components/EventCard';
+import EventRecommendations from '../components/EventRecommendations';
 
 const Home = () => {
   const [featuredEvents, setFeaturedEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   
-  useEffect(() => {
-    const loadFeaturedEvents = async () => {
-      try {
-        setLoading(true);
-        const events = await fetchEvents();
-        // Get 3 random events to feature
-        const randomEvents = events.sort(() => 0.5 - Math.random()).slice(0, 3);
-        setFeaturedEvents(randomEvents);
-      } catch (error) {
-        console.error('Failed to load featured events:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadFeaturedEvents();
+  const loadFeaturedEvents = useCallback(async () => {
+    try {
+      setLoading(true);
+      const events = await fetchEvents();
+      const randomEvents = events.sort(() => 0.5 - Math.random()).slice(0, 3);
+      setFeaturedEvents(randomEvents);
+    } catch (error) {
+      console.error('Failed to load featured events:', error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+  
+  useEffect(() => {
+    loadFeaturedEvents();
+  }, [loadFeaturedEvents]);
+  
+  const featuredEventsMemo = useMemo(() => featuredEvents, [featuredEvents]);
   
   return (
     <div className="home-container">
@@ -36,7 +39,6 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Features Section */}
       <section className="features-section">
         <h2 className="section-title">Why Choose EventSphere?</h2>
         <div className="features-container">
@@ -58,22 +60,14 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Featured Events Section */}
       <section className="featured-events-section">
         <h2 className="section-title">Featured Events</h2>
         {loading ? (
           <LoadingState message="Loading featured events..." />
         ) : (
           <div className="featured-events-container">
-            {featuredEvents.map(event => (
-              <div className="featured-event-card" key={event._id}>
-                <div className="event-date">
-                  {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                </div>
-                <h3>{event.title}</h3>
-                <p>{event.description ? event.description.substring(0, 100) + '...' : 'No description available.'}</p>
-                <Link to={`/events/${event._id}`} className="event-link">Learn More</Link>
-              </div>
+            {featuredEventsMemo.map(event => (
+              <EventCard key={event._id} event={event} />
             ))}
           </div>
         )}
@@ -82,7 +76,6 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Testimonials Section */}
       <section className="testimonials-section">
         <h2 className="section-title">What Our Users Say</h2>
         <div className="testimonials-container">
@@ -99,7 +92,8 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Call to Action */}
+      <EventRecommendations />
+      
       <section className="cta-section">
         <h2>Ready to Experience Amazing Events?</h2>
         <p>Join EventSphere today and never miss out on exciting opportunities!</p>
@@ -112,4 +106,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default React.memo(Home);

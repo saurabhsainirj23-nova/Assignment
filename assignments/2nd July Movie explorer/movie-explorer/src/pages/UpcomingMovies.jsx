@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { fetchUpcomingMovies } from "../api";
 import MovieCard from "../components/MovieCard";
 
@@ -6,25 +6,55 @@ const UpcomingMovies = () => {
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+
+  const loadMovies = useCallback(async (pageNum = 1) => {
+    setLoading(true);
+    setError(null);
+
+    const data = await fetchUpcomingMovies(pageNum);
+    const newMovies = data?.results || [];
+    
+    if (pageNum === 1) {
+      setMovies(newMovies);
+    } else {
+      setMovies((prev) => [...prev, ...newMovies]);
+    }
+    
+    setHasMore(newMovies.length > 0);
+    setLoadingInitial(false);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    const getMovies = async () => {
-      setLoading(true);
-      setError(null);
-
-      const data = await fetchUpcomingMovies(page);
-      setMovies((prev) => [...prev, ...(data?.results || [])]);
-
-      setLoading(false);
+    let isMounted = true;
+    
+    const load = async () => {
+      const data = await fetchUpcomingMovies(1);
+      if (isMounted) {
+        setMovies(data.results || []);
+        setHasMore((data.results || []).length > 0);
+        setLoadingInitial(false);
+      }
     };
+    load();
+    
+    return () => { isMounted = false; };
+  }, []);
 
-    getMovies();
-  }, [page]);
+  const handleLoadMore = useCallback(() => {
+    if (hasMore && !loading) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      loadMovies(nextPage);
+    }
+  }, [hasMore, loading, page, loadMovies]);
 
   return (
     <div>
-      <h1>🎬 Upcoming Movies</h1>
+      <h1>Upcoming Movies</h1>
 
       {error && <p className="status-message">{error}</p>}
 
@@ -36,13 +66,18 @@ const UpcomingMovies = () => {
 
       {loading && <p className="status-message">Loading...</p>}
 
-      {!loading && (
+      {!loadingInitial && movies.length === 0 && !error && (
+        <p className="status-message">No upcoming movies found.</p>
+      )}
+
+      {!loadingInitial && hasMore && (
         <div className="load-more-container">
           <button
-            onClick={() => setPage((prev) => prev + 1)}
+            onClick={handleLoadMore}
             className="load-more-btn"
+            disabled={loading}
           >
-            Load More
+            {loading ? "Loading..." : "Load More"}
           </button>
         </div>
       )}

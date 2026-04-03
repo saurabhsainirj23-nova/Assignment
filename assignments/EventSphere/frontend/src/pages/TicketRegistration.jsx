@@ -41,7 +41,18 @@ const TicketRegistration = () => {
     // Load event details
     const loadEvent = async () => {
       if (!eventId) {
-        setError('No event specified');
+        // If no event specified, fetch all events and use the first one
+        try {
+          const { fetchEvents } = await import('../api/eventApi');
+          const events = await fetchEvents();
+          if (events && events.length > 0) {
+            setEvent(events[0]);
+          } else {
+            setEvent(mockEventData);
+          }
+        } catch {
+          setEvent(mockEventData);
+        }
         setLoading(false);
         return;
       }

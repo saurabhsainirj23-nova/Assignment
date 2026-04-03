@@ -5,7 +5,7 @@ import {
   FaChartLine,
   FaChartPie,
 } from "react-icons/fa";
-import "./Analytics.css";
+import "./EventAnalytics.css";
 
 /* =========================
    CONSTANTS

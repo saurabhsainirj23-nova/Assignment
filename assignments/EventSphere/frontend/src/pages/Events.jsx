@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { fetchEvents, registerForEvent, fetchUserRegisteredEvents, checkEventRegistration } from '../api/eventApi';
 import EventCard from '../components/EventCard';
 import LoadingState from '../components/LoadingState';
-import ErrorState from '../components/ErrorState';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import './Events.css';
@@ -271,11 +270,6 @@ const Events = () => {
 
       {loading ? (
         <LoadingState message="Loading events..." />
-      ) : error ? (
-        <ErrorState 
-          message={error} 
-          onRetry={() => window.location.reload()} 
-        />
       ) : events.length === 0 ? (
         <div className="no-events">
           <p>No events available right now. Stay tuned for updates! 🚧</p>

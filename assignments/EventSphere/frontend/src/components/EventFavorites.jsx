@@ -6,7 +6,7 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useState, useMemo } from "react";
-import { useFavorites } from "../../hooks/useFavorites";
+import { useFavorites } from "../hooks/useFavorites";
 import "./EventFavorites.css";
 
 const EventFavorites = ({ events = [] }) => {

@@ -230,3 +230,88 @@ export const createAdmin = async (req, res) => {
     res.status(500).json({ msg: 'Server error', error: err.message });
   }
 };
+
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    res.json(user);
+  } catch (err) {
+    console.error('Get profile error:', err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, phone, location, bio } = req.body;
+    
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+    
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    if (location) user.location = location;
+    if (bio) user.bio = bio;
+    
+    await user.save();
+    
+    res.json({ 
+      msg: 'Profile updated',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        location: user.location,
+        bio: user.bio,
+        role: user.role,
+        preferences: user.preferences
+      }
+    });
+  } catch (err) {
+    console.error('Update profile error:', err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+    
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) return res.status(400).json({ msg: 'Current password is incorrect' });
+    
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    
+    res.json({ msg: 'Password changed successfully' });
+  } catch (err) {
+    console.error('Change password error:', err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+export const updatePreferences = async (req, res) => {
+  try {
+    const { notifications, newsletter, eventReminders } = req.body;
+    
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+    
+    user.preferences = {
+      notifications: notifications ?? user.preferences?.notifications,
+      newsletter: newsletter ?? user.preferences?.newsletter,
+      eventReminders: eventReminders ?? user.preferences?.eventReminders
+    };
+    
+    await user.save();
+    
+    res.json({ msg: 'Preferences saved', preferences: user.preferences });
+  } catch (err) {
+    console.error('Update preferences error:', err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};

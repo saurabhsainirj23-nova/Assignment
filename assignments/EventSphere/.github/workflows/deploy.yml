@@ -1,0 +1,47 @@
+name: Deploy to Production
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      
+      - name: Build application
+        run: |
+          cd backend && npm ci
+          cd ../frontend && npm ci
+          npm run build
+      
+      - name: Deploy to server
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          echo "Connecting to production server..."
+          # Add your deployment commands here
+          # e.g., rsync, scp, docker-compose up, etc.
+      
+      - name: Deploy status notification
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

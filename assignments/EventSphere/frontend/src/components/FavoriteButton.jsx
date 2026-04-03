@@ -1,5 +1,5 @@
 import { FaStar, FaRegStar } from "react-icons/fa";
-import { useFavorites } from "../../hooks/useFavorites";
+import { useFavorites } from "../hooks/useFavorites";
 
 const FavoriteButton = ({ event }) => {
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
